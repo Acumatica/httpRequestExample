@@ -4,16 +4,16 @@ using System.Net.Http;
 
 using PX.Data;
 
-namespace PX.Objects.AR
+namespace GetValueFromAPIExample
 {
-    public class ARSetupMaint_Extension : PXGraphExtension<ARSetupMaint>
+    public class ARSetupMaint_Extension : PXGraphExtension<PX.Objects.AR.ARSetupMaint>
     {
         public static bool IsActive()
         {
             return true;
         }
 
-        public PXAction<ARSetup> GetDataFromExternalAPI;
+        public PXAction<PX.Objects.AR.ARSetup> GetDataFromExternalAPI;
 
         [PXButton(CommitChanges = true)]
         [PXUIField(DisplayName = "Get Data From External API")]
@@ -32,7 +32,7 @@ namespace PX.Objects.AR
             );
             PXLongOperation.WaitCompletion(key);
 
-            var extension = PXCache<ARSetup>.GetExtension<ARSetupExt>(Base.ARSetupRecord.Current);
+            var extension = PXCache<PX.Objects.AR.ARSetup>.GetExtension<ARSetupExt>(Base.ARSetupRecord.Current);
             extension.UsrTestField = responseBody;
             Base.ARSetupRecord.Update(Base.ARSetupRecord.Current);
             return adapter.Get();

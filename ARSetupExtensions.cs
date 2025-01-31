@@ -1,7 +1,7 @@
 using System;
 using PX.Data;
 
-namespace PX.Objects.AR
+namespace GetValueFromAPIExample
 {
     public class ARSetupExt : PXCacheExtension<PX.Objects.AR.ARSetup>
     {
