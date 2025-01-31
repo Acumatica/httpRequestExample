@@ -31,7 +31,7 @@ namespace GetValueFromAPIExample
                     responseBody = await ExternalAPIService.GetDataFromApi(cancellationToken);
                 }
             );
-            PXLongOperation.WaitCompletion(key);
+            Base.LongOperationManager.WaitCompletion(key);
 
             var extension = PXCache<PX.Objects.AR.ARSetup>.GetExtension<ARSetupExt>(Base.ARSetupRecord.Current);
             extension.UsrTestField = responseBody;
