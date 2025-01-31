@@ -10,6 +10,14 @@
 	<OutputPath>CustomizationProject\bin/</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\..\Acumatica Sites\25r093\Bin\Autofac.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Http">
+      <HintPath>..\..\Acumatica Sites\25r093\Bin\Microsoft.Extensions.Http.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="PX.Common">
 	  <HintPath>..\..\..\Acumatica Sites\25r093\Bin\PX.Common.dll</HintPath>
       <Private>False</Private>

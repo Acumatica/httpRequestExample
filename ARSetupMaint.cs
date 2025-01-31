@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Net.Http;
 
 using PX.Data;
 
@@ -13,8 +12,14 @@ namespace GetValueFromAPIExample
             return true;
         }
 
-        public PXAction<PX.Objects.AR.ARSetup> GetDataFromExternalAPI;
+        [InjectDependency]
+        public IExternalAPIService ExternalAPIService
+        {
+            get;
+            set;
+        }
 
+        public PXAction<PX.Objects.AR.ARSetup> GetDataFromExternalAPI;
         [PXButton(CommitChanges = true)]
         [PXUIField(DisplayName = "Get Data From External API")]
         protected IEnumerable getDataFromExternalAPI(PXAdapter adapter)
@@ -22,12 +27,8 @@ namespace GetValueFromAPIExample
             string responseBody = "";
             var key = Guid.NewGuid();
             Base.LongOperationManager.StartAsyncOperation(key, async cancellationToken =>
-                {
-                    HttpClient client = new HttpClient();
-                    HttpResponseMessage response = await client.GetAsync("https://reqres.in/api/users", cancellationToken);
-                    response.EnsureSuccessStatusCode();
-
-                    responseBody = await response.Content.ReadAsStringAsync();
+                { 
+                    responseBody = await ExternalAPIService.GetDataFromApi(cancellationToken);
                 }
             );
             PXLongOperation.WaitCompletion(key);
