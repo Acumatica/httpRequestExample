@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Net.Http;
 
 using PX.Data;
 
@@ -13,7 +14,7 @@ namespace GetValueFromAPIExample
         }
 
         [InjectDependency]
-        public IExternalAPIService ExternalAPIService
+        public IHttpClientFactory HttpClientFactory
         {
             get;
             set;
@@ -27,8 +28,14 @@ namespace GetValueFromAPIExample
             string responseBody = "";
             var key = Guid.NewGuid();
             Base.LongOperationManager.StartAsyncOperation(key, async cancellationToken =>
-                { 
-                    responseBody = await ExternalAPIService.GetDataFromApi(cancellationToken);
+                {
+                    using (var client = HttpClientFactory.CreateClient())
+                    {
+                        HttpResponseMessage response = await client.GetAsync("https://reqres.in/api/users", cancellationToken);
+                        response.EnsureSuccessStatusCode();
+
+                        responseBody = await response.Content.ReadAsStringAsync();
+                    }
                 }
             );
             Base.LongOperationManager.WaitCompletion(key);
