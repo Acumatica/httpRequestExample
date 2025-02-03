@@ -22,6 +22,7 @@ namespace GetValueFromAPIExample
             set;
         }
 
+        // this adds a button to the ARSetup screen
         public PXAction<PX.Objects.AR.ARSetup> GetDataFromExternalAPI;
         [PXButton(CommitChanges = true)]
         [PXUIField(DisplayName = "Get Data From External API")]
@@ -29,6 +30,8 @@ namespace GetValueFromAPIExample
         {
             string responseBody = "";
             var key = Guid.NewGuid();
+
+            //this is a special way to run async operations in Acumatica
             Base.LongOperationManager.StartAsyncOperation(key, async cancellationToken =>
                 {
                     using (var client = HttpClientFactory.CreateClient())
@@ -40,8 +43,10 @@ namespace GetValueFromAPIExample
                     }
                 }
             );
+            //wait for the operation to complete using the key we've assigned to the operation
             Base.LongOperationManager.WaitCompletion(key);
 
+            //since the custom field we want to write the data to is defined in an extension, we need to get the extension object first
             var extension = PXCache<PX.Objects.AR.ARSetup>.GetExtension<ARSetupExt>(Base.ARSetupRecord.Current);
             extension.UsrTestField = responseBody;
             Base.ARSetupRecord.Update(Base.ARSetupRecord.Current);
