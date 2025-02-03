@@ -8,6 +8,8 @@ namespace GetValueFromAPIExample
 {
     public class ARSetupMaint_Extension : PXGraphExtension<PX.Objects.AR.ARSetupMaint>
     {
+        //we need IsActive here to be able to enable/disable the extension conditionally. 
+        //for more information see https://help.acumatica.com/Help?ScreenId=ShowWiki&pageid=cd70b408-b389-4bd8-8502-3d9c12b11112
         public static bool IsActive()
         {
             return true;
