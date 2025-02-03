@@ -49,7 +49,11 @@ namespace GetValueFromAPIExample
             //since the custom field we want to write the data to is defined in an extension, we need to get the extension object first
             var extension = PXCache<PX.Objects.AR.ARSetup>.GetExtension<ARSetupExt>(Base.ARSetupRecord.Current);
             extension.UsrTestField = responseBody;
+
+            //need to update the record for the changes to be properly applied
             Base.ARSetupRecord.Update(Base.ARSetupRecord.Current);
+
+
             return adapter.Get();
         }
     }
