@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Net.Http;
 
+using PX.Async;
 using PX.Data;
 
 namespace GetValueFromAPIExample
@@ -48,6 +49,13 @@ namespace GetValueFromAPIExample
             );
             // wait for the operation to complete using the key we've assigned to the operation
             Base.LongOperationManager.WaitCompletion(key);
+
+            //check if the operation has completed successfully. Throw an exception if it did not
+            var details = Base.LongOperationManager.GetOperationDetails(key);
+            if (details.Status == PXLongRunStatus.Aborted)
+            {
+                throw details.Message != null ? details.Message : new PXException("The operation was aborted unexpectedly.");
+            }
 
             // since the custom field we want to write the data to is defined in an extension, we need to get the extension object first
             var extension = PXCache<PX.Objects.AR.ARSetup>.GetExtension<ARSetupExt>(Base.ARSetupRecord.Current);
