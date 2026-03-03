@@ -1,9 +1,8 @@
-using System;
+using PX.Data;
+
 using System.Collections;
 using System.Net.Http;
-
-using PX.Async;
-using PX.Data;
+using System.Threading;
 
 namespace GetValueFromAPIExample
 {
@@ -32,29 +31,18 @@ namespace GetValueFromAPIExample
         [PXUIField(DisplayName = "Get Data From External API")]
         protected IEnumerable getDataFromExternalAPI(PXAdapter adapter)
         {
-            string responseBody = "";
-            var key = Guid.NewGuid();
+            string responseBody;
 
-            // this is a special way to run async operations in Acumatica
-            Base.LongOperationManager.StartAsyncOperation(key, async cancellationToken =>
-                {
-                    using (var client = HttpClientFactory.CreateClient())
-                    {
-                        HttpResponseMessage response = await client.GetAsync("https://reqres.in/api/users", cancellationToken);
-                        response.EnsureSuccessStatusCode();
-
-                        responseBody = await response.Content.ReadAsStringAsync();
-                    }
-                }
-            );
-            // wait for the operation to complete using the key we've assigned to the operation
-            Base.LongOperationManager.WaitCompletion(key);
-
-            //check if the operation has completed successfully. Throw an exception if it did not
-            var details = Base.LongOperationManager.GetOperationDetails(key);
-            if (details.Status == PXLongRunStatus.Aborted)
+			using (var client = HttpClientFactory.CreateClient())
             {
-                throw details.Message != null ? details.Message : new PXException("The operation was aborted unexpectedly.");
+				// this is a special way to run async operations in Acumatica
+				responseBody = Base.LongOperationManager.Await(async (CancellationToken token) =>
+                {
+                    HttpResponseMessage response = await client.GetAsync("https://reqres.in/api/users", token);
+                    response.EnsureSuccessStatusCode();
+
+                    return await response.Content.ReadAsStringAsync();
+                });
             }
 
             // since the custom field we want to write the data to is defined in an extension, we need to get the extension object first
@@ -63,7 +51,6 @@ namespace GetValueFromAPIExample
 
             //need to update the record for the changes to be properly applied
             Base.ARSetupRecord.Update(Base.ARSetupRecord.Current);
-
 
             return adapter.Get();
         }
